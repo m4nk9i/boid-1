@@ -2,80 +2,13 @@ var ctx;
 var drawing = [];
 var mstate;
 var boids=[];
-const NUM_BOIDS=10;
+const NUM_BOIDS=100;
 const pi_2=Math.PI*2;
-const MAXX=500;
-const MAXY=500;
+var MAXX=100;
+var MAXY=100;
 var animate=0;
 
 
-class vec2{
-    x;
-    y;
-
-    copy(pvec)
-    {
-        this.x=pvec.x;
-        this.y=pvec.y;
-    }
-
-    constructor (px,py)
-    {
-        this.x=px;
-        this.y=py;
-    }
-
-    add(pvec)
-    {
-        this.x+=pvec.x;
-        this.y+=pvec.y;
-    }
-
-    addmult(pvec,pmul)
-    {
-        this.x+=pvec.x*pmul;
-        this.y+=pvec.y*pmul;
-    }
-
-}
-
-class Boid{
-
-    pos;
-    vel;
-    constructor (pvec)
-    {
-        this.pos=new vec2(pvec.x,pvec.y);
-
-
-    }
-
-    draw(pctx) {
-        pctx.beginPath();
-        pctx.ellipse(this.pos.x,this.pos.y,10,10,0,0,pi_2); 
-        pctx.stroke();
-    }
-
-    update()
-    {
-        this.pos.addmult(this.vel,0.1);
-        if ((this.pos.x<0) || (this.pos.x>MAXX))
-        {
-            this.vel.x*=-1;
-        }
-        if ((this.pos.y<0) || (this.pos.y>MAXY))
-        {
-            this.vel.y*=-1;
-        }
-    }
-
-    log()
-    {
-        console.log(this.pos);
-    }
-
-
-}
 
 function initBoids()
 {
@@ -88,6 +21,8 @@ function initBoids()
         ty=-100+Math.random()*200.0;
         let tve=new vec2(tx,ty);
         let tboid=new Boid(tpos);
+        tve.norm();
+        tve.mul(20);
         tboid.vel=tve;
         boids.push(tboid);
     }
@@ -102,11 +37,10 @@ function updateBoids(){
 }
 
 function drawBoids(){
+    ctx.clearRect(0, 0, MAXX, MAXY)
     for (let i=0;i<NUM_BOIDS;i++)
-    {
-        
+    {        
         boids[i].draw(ctx);
-   
     }
     
 }
@@ -117,10 +51,9 @@ function loop()
     if (animate)
     {
         updateBoids();
-        drawBoids();
-    
     }
-    
+    drawBoids();
+    window.requestAnimationFrame(loop);
 }
 
 function butt1click()
@@ -136,14 +69,17 @@ function butt1click()
 
 function butt2click()
 {
-        animate=1;
+        animate=0;
 }
 
 function Init()
 {
     var canvas = document.getElementById("myCanvas");
+    MAXX=canvas.width; 
+    MAXY=canvas.height;
     ctx = canvas.getContext("2d");
     initBoids();
+    window.requestAnimationFrame(loop);
 }
 
 function refreshViewport() {
