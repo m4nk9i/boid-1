@@ -37,6 +37,25 @@
         return (Math.atan2(this.y,this.x))   
     }
 
+    dir2vec(pvec)
+    {
+        return(Math.atan2(pvec.y-this.y,pvec.x-this.x));
+    }
+
+    rot(pang)
+    {
+        let tl=this.len();
+        let td=this.dir()+pang;
+        this.x=tl*Math.cos(td);
+        this.y=tl*Math.sin(td);
+
+    }
+
+    dist2(pvec)
+    {
+        return ((this.x-pvec.x)*(this.x-pvec.x)+(this.y-pvec.y)*(this.y-pvec.y))
+    } 
+
     len()
     {
         return (Math.sqrt(this.x*this.x+this.y*this.y))

@@ -2,7 +2,7 @@ var ctx;
 var drawing = [];
 var mstate;
 var boids=[];
-const NUM_BOIDS=100;
+const NUM_BOIDS=10;
 const pi_2=Math.PI*2;
 var MAXX=100;
 var MAXY=100;
@@ -30,8 +30,21 @@ function initBoids()
 
 
 function updateBoids(){
+
+    tvec=findCenterOfIntrest(boids[0]);
+        //console.log(tvec);
+        tDeltaAngle=boids[0].pos.dir2vec(tvec);
+        //boids[i].vel.rot(0.1);
+        boids[0].vel.rot(tDeltaAngle/10.0);
+
+
     for (let i=0;i<NUM_BOIDS;i++)
     {
+//        tvec=findCenterOfIntrest(boids[i]);
+        //console.log(tvec);
+//        tDeltaAngle=boids[i].pos.dir2vec(tvec);
+        //boids[i].vel.rot(0.1);
+//        boids[i].vel.rot(tDeltaAngle/10.0);
         boids[i].update();
     }
 }
@@ -42,6 +55,29 @@ function drawBoids(){
     {        
         boids[i].draw(ctx);
     }
+    
+}
+
+function findCenterOfIntrest(pboi)
+{
+    //let tblist=[];
+    let tcenter=new vec2(0,0);
+    let tneighbors=0;
+    for (let i=0;i<NUM_BOIDS;i++)
+    {
+        if (pboi.pos.dist2(boids[i].pos)<40000)
+        {
+            //tblist.push(boids[i].pos);
+            tcenter.add(boids[i].pos);
+            tneighbors++;
+        }
+    }
+    console.log(tneighbors);
+    if (tneighbors>0)
+    {
+        tcenter.mul(1.0/tneighbors);
+    }
+    return tcenter;
     
 }
 
