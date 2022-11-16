@@ -2,7 +2,7 @@ var ctx;
 var drawing = [];
 var mstate;
 var boids=[];
-const NUM_BOIDS=10;
+const NUM_BOIDS=100;
 const pi_2=Math.PI*2;
 var MAXX=100;
 var MAXY=100;
@@ -33,18 +33,21 @@ function updateBoids(){
 
     tvec=findCenterOfIntrest(boids[0]);
         //console.log(tvec);
+        /*
         tDeltaAngle=boids[0].pos.dir2vec(tvec);
+        console.log(tDeltaAngle);
+        console.log(boids[0].vel.dir());
         //boids[i].vel.rot(0.1);
-        boids[0].vel.rot(tDeltaAngle/10.0);
-
+        boids[0].vel.rot(tDeltaAngle/25.0);
+*/
 
     for (let i=0;i<NUM_BOIDS;i++)
     {
-//        tvec=findCenterOfIntrest(boids[i]);
+        tvec=findCenterOfIntrest(boids[i]);
         //console.log(tvec);
-//        tDeltaAngle=boids[i].pos.dir2vec(tvec);
+        tDeltaAngle=boids[i].pos.dir2vec(tvec)-boids[i].vel.dir();
         //boids[i].vel.rot(0.1);
-//        boids[i].vel.rot(tDeltaAngle/10.0);
+        boids[i].vel.rot(tDeltaAngle/100.0);
         boids[i].update();
     }
 }
@@ -65,17 +68,29 @@ function findCenterOfIntrest(pboi)
     let tneighbors=0;
     for (let i=0;i<NUM_BOIDS;i++)
     {
-        if (pboi.pos.dist2(boids[i].pos)<40000)
+        if (pboi.pos.dist2(boids[i].pos)<10000)
         {
             //tblist.push(boids[i].pos);
             tcenter.add(boids[i].pos);
             tneighbors++;
+            ctx.beginPath();
+            ctx.moveTo(pboi.pos.x,pboi.pos.y);
+            ctx.lineTo(boids[i].pos.x,boids[i].pos.y);
+            //console.log(tcenter);
+            ctx.stroke();
         }
     }
-    console.log(tneighbors);
+//    console.log(tneighbors);
     if (tneighbors>0)
     {
+        //console.log(tcenter);
         tcenter.mul(1.0/tneighbors);
+        ctx.beginPath();
+        ctx.moveTo(pboi.pos.x,pboi.pos.y);
+        ctx.lineTo(tcenter.x,tcenter.y);
+        //console.log(tcenter);
+        ctx.stroke();
+
     }
     return tcenter;
     
@@ -86,9 +101,10 @@ function loop()
 {
     if (animate)
     {
+        drawBoids();
         updateBoids();
     }
-    drawBoids();
+
     window.requestAnimationFrame(loop);
 }
 
