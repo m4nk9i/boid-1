@@ -43,11 +43,31 @@ function updateBoids(){
 
     for (let i=0;i<NUM_BOIDS;i++)
     {
-        tvec=findCenterOfIntrest(boids[i]);
+        tvec=findCenterOfIntrest(boids[i]);     // srodek ciezkosci
         //console.log(tvec);
-        tDeltaAngle=boids[i].pos.dir2vec(tvec)-boids[i].vel.dir();
+        if (tvec[0]>1)
+        {
+        let ang1=boids[i].pos.dir2vec(tvec[1]);
+        let ang2=boids[i].vel.dir();
+
+        tDeltaAngle=ang1-ang2;
+        if (tDeltaAngle<-Math.PI)
+        {
+            tDeltaAngle+=Math.PI*2.0;
+        }
+        if (tDeltaAngle>Math.PI)
+        {
+            tDeltaAngle-=Math.PI*2.0;
+        }
+        
+
+//        tDeltaAngle=boids[i].pos.dir2vec(tvec)-boids[i].vel.dir();  //tdelta to roznica miedzy katem od srodka ciezkosci do polozenia wektora
+                                                                    // a wktorem predkosci boida 
         //boids[i].vel.rot(0.1);
-        boids[i].vel.rot(tDeltaAngle/100.0);
+        //tDeltaAngle=boids[i].pos.dir2vec(tvec)-boids[i].vel.dir();
+        boids[i].vel.rot(tDeltaAngle/75.0);
+        }
+    
         boids[i].update();
     }
 }
@@ -66,6 +86,7 @@ function findCenterOfIntrest(pboi)
     //let tblist=[];
     let tcenter=new vec2(0,0);
     let tneighbors=0;
+    ctx.strokeStyle = 'gray';
     for (let i=0;i<NUM_BOIDS;i++)
     {
         if (pboi.pos.dist2(boids[i].pos)<10000)
@@ -74,6 +95,7 @@ function findCenterOfIntrest(pboi)
             tcenter.add(boids[i].pos);
             tneighbors++;
             ctx.beginPath();
+            
             ctx.moveTo(pboi.pos.x,pboi.pos.y);
             ctx.lineTo(boids[i].pos.x,boids[i].pos.y);
             //console.log(tcenter);
@@ -86,13 +108,15 @@ function findCenterOfIntrest(pboi)
         //console.log(tcenter);
         tcenter.mul(1.0/tneighbors);
         ctx.beginPath();
+        ctx.strokeStyle = 'blue';
         ctx.moveTo(pboi.pos.x,pboi.pos.y);
         ctx.lineTo(tcenter.x,tcenter.y);
         //console.log(tcenter);
         ctx.stroke();
 
     }
-    return tcenter;
+    ctx.strokeStyle = 'black';
+    return [tneighbors,tcenter];
     
 }
 
